@@ -31,3 +31,9 @@
 
 # "temporary" build files
 /target
+
+.idea/
+global-groovy.log
+gorm1.iml
+soapui-errors.log
+soapui.log
