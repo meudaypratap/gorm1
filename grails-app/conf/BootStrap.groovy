@@ -4,19 +4,14 @@ class BootStrap {
 
     def init = { servletContext ->
         List<User> users = createUsers()
-        users.each {
-            findById(it.id)
-        }
-        users.each {
-            getById(it.id)
-        }
+        listRecords()
+        listRecordsByIds(users.id)
     }
-
 
     List<User> createUsers() {
         List<User> users = []
         (1..10).each {
-            User user = new User(name: "user ${it}", email: "user+${it}@gmail.com", dob: new Date() - it)
+            User user = new User(name: "user ${it}", email: "user+${it}@gmail.com", dob: new Date() - it, balance: 1000 * it)
             if (user.save()) {
                 users.add(user)
                 log.info "User ${user} saved successfully"
@@ -27,20 +22,14 @@ class BootStrap {
         users
     }
 
-    void findById(Long id) {
-        println "#######Finding User with Id :${id}##########"
-        User user1 = User.findById(id)
-        println "_______Finding User with Id :${id}___________"
-        User user2 = User.findById(id)
-        println "---------------------------------------------"
+    void listRecords() {
+        User.list([sort: 'dob', order: 'desc', max: 5, offset: 0]).each { User user ->
+            println "---${user.name}--${user.dob}"
+        }
     }
 
-    void getById(Long id) {
-        println "#######Getting User with Id :${id}##########"
-        User user1 = User.get(id)
-        println "_______Getting User with Id :${id}___________"
-        User user2 = User.get(id)
-        println "---------------------------------------------"
+    void listRecordsByIds(List<Long> ids) {
+        List<User> users = User.getAll(ids)
     }
 
     def destroy = {
