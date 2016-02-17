@@ -6,4 +6,9 @@ class User {
     Date dob
     Boolean active = false
     Integer balance = 0
+
+    static constraints = {
+        email(nullable: true)
+        dob(nullable: true)
+    }
 }
