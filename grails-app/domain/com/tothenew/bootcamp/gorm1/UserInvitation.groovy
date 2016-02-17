@@ -1,8 +1,8 @@
 package com.tothenew.bootcamp.gorm1
 
 class UserInvitation {
-    String code
-    Boolean active
+    String code = UUID.randomUUID()
+    Boolean active = true
 
     static belongsTo = [user: User]
 }

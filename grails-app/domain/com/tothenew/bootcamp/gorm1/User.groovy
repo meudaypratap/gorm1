@@ -13,4 +13,11 @@ class User {
         email(nullable: true)
         dob(nullable: true)
     }
+
+    def afterInsert() {
+        User.withNewSession {
+            UserInvitation userInvitation = new UserInvitation(user: this)
+            userInvitation.save()
+        }
+    }
 }
