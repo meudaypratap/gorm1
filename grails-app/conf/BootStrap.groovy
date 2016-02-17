@@ -4,9 +4,7 @@ class BootStrap {
 
     def init = { servletContext ->
         List<User> users = createUsers()
-        listRecords()
-        listRecordsByIds(users.id)
-        findAllRecords()
+        countRecords()
     }
 
     List<User> createUsers() {
@@ -23,34 +21,15 @@ class BootStrap {
         users
     }
 
-    void listRecords() {
-        List<User> users = User.list([sort: 'dob', order: 'desc', max: 5, offset: 0])
-        log.info "Listing records for list method"
-        logRecords(users)
-    }
-
-    void listRecordsByIds(List<Long> ids) {
-        List<User> users = User.getAll(ids)
-        logRecords(users)
-    }
-
-    void findAllRecords() {
-        List<User> users = User.findAllByName("user 1", [sort: 'dob', order: 'desc', max: 5, offset: 0])
-        log.info "Listing records of findAllByName"
-        logRecords(users)
-        List<User> users1 = User.findAllByNameIlikeAndBalanceGreaterThan("%user%", 4000, [sort: 'dob', order: 'desc', max: 5, offset: 0])
-        log.info "Listing records of findAllByNameIlikeAndBalanceGreaterThan"
-        logRecords(users1)
-        List<User> users2 = User.findAllByNameIlikeOrBalanceGreaterThan("%user%", 4000, [sort: 'dob', order: 'desc', max: 5, offset: 0])
-        log.info "Listing records of findAllByNameIlikeOrBalanceGreaterThan"
-        logRecords(users2)
-
-    }
-
-    void logRecords(List<User> users) {
-        users.each { User user ->
-            log.info "---${user.name}--${user.dob}"
-        }
+    void countRecords() {
+        Integer count = User.count()
+        log.info "Count : ${count}"
+        Integer count1 = User.countByName("uday")
+        log.info "countByName : ${count1}"
+        Integer count2 = User.countByNameIlikeAndBalanceIsNotNull("%user%")
+        log.info "countByNameIlikeAndBalanceIsNotNull : ${count2}"
+        Integer count3 = User.countByNameIlikeOrBalanceInList("%user%", [1000, 2000, 3000])
+        log.info "countByNameIlikeOrBalanceInList : ${count3}"
     }
 
     def destroy = {
