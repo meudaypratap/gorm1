@@ -50,8 +50,8 @@ class BootStrap {
     void findCreateSaveWhere() {
         User user = User.findOrCreateWhere([name: 'user 1', email: 'user+1@gmail.com', balance: 1000])
         log.info "user-----findOrCreateWhere---${user?.id}"
-        User user1 = User.findOrSaveWhere([name: 'user 1', email: 'user+1@gmail.com', balance: 10000])
-        log.info "user1-----findOrSaveWhere---${user1?.id}"
+        User user1 = User.findOrCreateWhere([name: 'user 1', email: 'user+1@gmail.com', balance: 10000])
+        log.info "user1-----findOrCreateWhere---${user1?.id}"
 
         User user2 = User.findOrSaveWhere([name: 'user 1', email: 'user+1@gmail.com', balance: 1000])
         log.info "user2-----findOrSaveWhere---${user2?.id}"
