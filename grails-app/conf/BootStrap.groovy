@@ -1,12 +1,21 @@
+import com.tothenew.bootcamp.gorm1.Book
 import com.tothenew.bootcamp.gorm1.User
 
 class BootStrap {
 
     def init = { servletContext ->
         List<User> users = createUsers()
-        findCreate()
-        findSave()
-        findCreateSaveWhere()
+        addFriends(users)
+        logFriends(users)
+        removeFriends(users)
+        logFriends(users)
+        User user = createAndAddBook()
+        log.info "---------Before remove :: User ${user.books} : ${user.books.size()}---------------"
+        removingBook(user, Book.first())
+//        user.refresh()
+        println "----------------------------------------"
+        def books = user.books
+        log.info "*********After remove :: User ${books} : ${books.size()}**********"
     }
 
     List<User> createUsers() {
@@ -23,40 +32,50 @@ class BootStrap {
         users
     }
 
-    void findCreate() {
-        User user = User.findOrCreateByName("user 1")
-        log.info "user-----findOrCreateByName---${user.id}"
-        User user1 = User.findOrCreateByName("user 11")
-        log.info "user1-----findOrCreateByName---${user1.id}"
-
-        User user2 = User.findOrCreateByNameAndBalance("user 1", 1000)
-        log.info "user2-----findOrCreateByNameAndBalance---${user2.id}"
-        User user3 = User.findOrCreateByNameAndBalance("user 1", 12000)
-        log.info "user3-----findOrCreateByNameAndBalance---${user3.id}"
+    void addFriends(List<User> users) {
+        log.info("-------Adding friends---------")
+        users.each { User user ->
+            addFriend(user)
+        }
     }
 
-    void findSave() {
-        User user = User.findOrSaveByName("user 1")
-        log.info "user-----findOrSaveByName---${user?.id}"
-        User user1 = User.findOrSaveByName("user 11")
-        log.info "user1-----findOrSaveByName---${user1?.id}"
-
-        User user2 = User.findOrSaveByNameAndBalance("user 1", 1000)
-        log.info "user2-----findOrSaveByNameAndBalance---${user2?.id}"
-        User user3 = User.findOrSaveByNameAndBalance("user 1", 12000)
-        log.info "user3-----findOrSaveByNameAndBalance---${user3?.id}"
+    void addFriend(User user) {
+        List<User> friends = User.findAllByIdNotEqual(user.id, [max: user.id])
+        friends.each { User friend ->
+            user.addToFriends(friend)
+        }
     }
 
-    void findCreateSaveWhere() {
-        User user = User.findOrCreateWhere([name: 'user 1', email: 'user+1@gmail.com', balance: 1000])
-        log.info "user-----findOrCreateWhere---${user?.id}"
-        User user1 = User.findOrCreateWhere([name: 'user 1', email: 'user+1@gmail.com', balance: 10000])
-        log.info "user1-----findOrCreateWhere---${user1?.id}"
+    void logFriends(List<User> users) {
+        log.info("-------------Logging friends----------")
+        users.each { User user ->
+            log.info "User:${user.id} :: ${user.friends.size()}"
+        }
+    }
 
-        User user2 = User.findOrSaveWhere([name: 'user 1', email: 'user+1@gmail.com', balance: 1000])
-        log.info "user2-----findOrSaveWhere---${user2?.id}"
-        User user3 = User.findOrSaveWhere([name: 'user 1', email: 'user+1@gmail.com', balance: 21000])
-        log.info "user3-----findOrSaveWhere---${user3?.id}"
+    void removeFriends(List<User> users) {
+        log.info("----------Removing friends--------------")
+        users.each { User user ->
+            removeFriend(user)
+        }
+    }
+
+    void removeFriend(User user) {
+        User friend = user.friends.first()
+        user.removeFromFriends(friend)
+    }
+
+    User createAndAddBook() {
+        log.info "-------Creating user with book---------"
+        User user = new User(name: "New user")
+        user.addToBooks(new Book(name: "Test book"))
+        user.save()
+    }
+
+    void removingBook(User user, Book book) {
+        log.info "------Removing book ${book} for user ${user}"
+        user.removeFromBooks(book)
+        user.save(flush: true)
     }
 
     def destroy = {
