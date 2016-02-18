@@ -15,9 +15,14 @@ class User {
     }
 
     def afterInsert() {
-        User.withNewSession {
-            UserInvitation userInvitation = new UserInvitation(user: this)
-            userInvitation.save()
-        }
+        log.info "----------Into After Insert------"
+    }
+
+    def beforeInsert() {
+        log.info "----------Into before Insert------"
+    }
+
+    def beforeValidate() {
+        log.info "----------Into before Validate------"
     }
 }
